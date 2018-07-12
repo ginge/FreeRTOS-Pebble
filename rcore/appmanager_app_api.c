@@ -41,7 +41,7 @@ void appmanager_post_button_message(ButtonMessage *bmessage)
     appmanager_post_generic_app_message(&am, 10);
 }
 
-void appmanager_post_draw_message(uint16_t timeout_ms)
+void appmanager_post_draw_message(uint32_t timeout_ms)
 {
     AppMessage am = (AppMessage) {
         .message_type_id = APP_DRAW

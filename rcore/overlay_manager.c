@@ -272,7 +272,7 @@ static void _overlay_window_draw(bool window_is_dirty)
     }
 
     /* We get to call it. Final draw is done here. we ask app thread to do it.*/
-    appmanager_post_draw_display_message((int *)&_draw);
+    appmanager_post_draw_display_message((uint8_t *)&_draw);
 }
 
 static void _overlay_thread(void *pvParameters)

@@ -7,9 +7,11 @@
  
 #include "rebbleos.h"
 
+#define TASK_DISPLAY_STACK_SIZE 920
+
 static TaskHandle_t _display_task;
 static StaticTask_t _display_task_buf;
-static StackType_t _display_task_stack[780];
+static StackType_t _display_task_stack[TASK_DISPLAY_STACK_SIZE];
 
 /* Semaphore to start drawing */
 static SemaphoreHandle_t _display_start_sem;
@@ -34,7 +36,7 @@ uint8_t display_init(void)
     _draw_mutex    = xSemaphoreCreateMutexStatic(&_draw_mutex_buf);
     
     // set up the RTOS tasks
-    _display_task = xTaskCreateStatic(_display_thread, "Display", 780, 
+    _display_task = xTaskCreateStatic(_display_thread, "Display", TASK_DISPLAY_STACK_SIZE, 
                                       NULL, tskIDLE_PRIORITY + 11UL, 
                                       _display_task_stack, &_display_task_buf);
    
@@ -78,7 +80,6 @@ void display_reset(uint8_t enabled)
 static void _display_start_frame(uint8_t xoffset, uint8_t yoffset)
 {
     hw_display_start_frame(xoffset, yoffset);
-    
     
     // block wait for the draw to finish
     // this is invoked via the ISR

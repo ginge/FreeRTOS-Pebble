@@ -24,8 +24,8 @@
 
 #define ROW_LENGTH    DISPLAY_COLS
 #define COLUMN_LENGTH DISPLAY_ROWS
-static uint8_t _frame_buffer[DISPLAY_ROWS * DISPLAY_COLS];
-static uint8_t _column_buffer[COLUMN_LENGTH] CCRAM;
+static uint8_t _frame_buffer[DISPLAY_ROWS * DISPLAY_COLS] CCRAM;
+static uint8_t _column_buffer[COLUMN_LENGTH];
 static uint8_t _display_ready;
 
 void _snowy_display_start_frame(uint8_t xoffset, uint8_t yoffset);
@@ -192,7 +192,7 @@ void hw_display_init(void)
     stm32_power_release(STM32_POWER_APB2, RCC_APB2Periph_SYSCFG);
     stm32_power_release(STM32_POWER_AHB1, RCC_AHB1Periph_GPIOG);
 
-    return 0;
+    return;
 }
 
 
@@ -363,10 +363,8 @@ uint8_t _snowy_display_FPGA_reset(uint8_t mode)
         
         if (k >=1001)
         {
-            char *err = "Timed out waiting for reset";
-            DRV_LOG("FPGA", APP_LOG_LEVEL_ERROR, err);
+            DRV_LOG("FPGA", APP_LOG_LEVEL_ERROR, "Timed out waiting for reset");
             _snowy_display_release_clocks();
-            assert(!err);
             return 0;
         }
     }
@@ -415,7 +413,7 @@ void _snowy_display_start_frame(uint8_t xoffset, uint8_t yoffset)
 {
     _snowy_display_request_clocks();
 //     stm32_power_request(_spi6.config->spi_periph_bus, _spi6.config->spi_clock);
-
+    
     _snowy_display_cs(1);
     delay_us(10);
     stm32_spi_write(&_spi6, DISPLAY_CTYPE_FRAME); // Frame Begin
