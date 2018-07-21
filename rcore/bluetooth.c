@@ -36,6 +36,7 @@
 #include "rbl_bluetooth.h"
 #include "pebble_protocol.h"
 #include "stdarg.h"
+#include "btstack_rebble.h"
 
 /* macro to swap bytes from big > little endian */
 #define SWAP_UINT16(x) (((x) >> 8) | ((x) << 8))
@@ -106,7 +107,7 @@ uint8_t bluetooth_init(void)
 
 void bluetooth_init_complete(uint8_t state)
 {
-    os_module_init_complete(INIT_RESP_ERROR);
+    os_module_init_complete(state);
 }
 
 /*

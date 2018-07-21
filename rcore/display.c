@@ -6,6 +6,7 @@
  */
  
 #include "rebbleos.h"
+#include "appmanager.h"
 
 #define TASK_DISPLAY_STACK_SIZE 920
 
