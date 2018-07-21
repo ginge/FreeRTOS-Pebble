@@ -42,25 +42,24 @@ static void _os_thread(void *pvParameters)
      * or a delay before it is up. Once the module is up, it 
      * can report completion
      */
-    _module_init(flash_init, "Flash Storage");
-    _module_init(vibrate_init, "Vibro");
-    _module_init(display_init, "Display");
-    _module_init(rcore_buttons_init, "Buttons");
+    _module_init(flash_init,            "Flash Storage");
+    _module_init(vibrate_init,          "Vibro");
+    _module_init(display_init,          "Display");
+    _module_init(rcore_buttons_init,    "Buttons");
     rtc_init();
     rcore_time_init();
     //rcore_ambient_init("Ambiance");
-    _module_init(rcore_backlight_init, "Backlight");
+    _module_init(rcore_backlight_init,  "Backlight");
     platform_init_late();
     rcore_watchdog_init_late();
-    KERN_LOG("init", APP_LOG_LEVEL_INFO, "watchdog is ticking");
-
-    SYS_LOG("OS", APP_LOG_LEVEL_INFO, "Init: Main hardware up. Starting OS modules");
-
-    _module_init(resource_init, "Resources");
-    _module_init(notification_init, "Notifications");
-    _module_init(overlay_window_init, "Overlay");
-    _module_init(appmanager_init, "Main App");
-//     _module_init(bluetooth_init, "Bluetooth");
+    KERN_LOG("OS", APP_LOG_LEVEL_INFO,  "Watchdog is ticking");
+    _module_init(bluetooth_init,        "Bluetooth");
+    
+    SYS_LOG("OS", APP_LOG_LEVEL_INFO,   "Init: Main hardware up. Starting OS modules");
+    _module_init(resource_init,         "Resources");
+    _module_init(notification_init,     "Notifications");
+    _module_init(overlay_window_init,   "Overlay");
+    _module_init(appmanager_init,       "Main App");
 
     //while(1)
         // block forever in slumber?
@@ -100,8 +99,7 @@ static void _module_init(mod_callback mod, const char *mod_name)
             SYS_LOG("OS", APP_LOG_LEVEL_WARNING, "Init: Module %s NOT supported", mod_name);
             break;
         case INIT_RESP_ERROR:
-            SYS_LOG("OS", APP_LOG_LEVEL_ERROR, "Init: Module broken %s", mod_name);
-            assert("SEVERE DEATH. Initializing module");
+            SYS_LOG("OS", APP_LOG_LEVEL_ERROR, "Init: Module %s broken.", mod_name);
     }
 
     return;

@@ -30,8 +30,6 @@ static SemaphoreHandle_t _draw_mutex;
  */
 uint8_t display_init(void)
 {   
-    hw_display_init();
-
     _display_start_sem = xSemaphoreCreateBinaryStatic(&_display_start_sem_buf);
     _draw_mutex    = xSemaphoreCreateMutexStatic(&_draw_mutex_buf);
     
@@ -111,6 +109,7 @@ void display_draw(void)
 static void _display_thread(void *pvParameters)
 {
     uint8_t data;
+    hw_display_init();
     os_module_init_complete(0);
     
     while(1)

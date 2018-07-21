@@ -88,6 +88,8 @@ static uint8_t _bluetooth_tx(uint8_t *data, uint16_t len);
 /* Initialise the bluetooth module */
 uint8_t bluetooth_init(void)
 {
+    _bt_cmd_queue = xQueueCreate(1, sizeof(rebble_bt_packet));
+    _bt_tx_mutex = xSemaphoreCreateMutexStatic(&_bt_tx_mutex_buf);
     _bt_task = xTaskCreateStatic(_bt_thread, 
                                      "BT", STACK_SZ_BT, NULL, 
                                      tskIDLE_PRIORITY + 3UL, 
@@ -98,15 +100,13 @@ uint8_t bluetooth_init(void)
                                      tskIDLE_PRIORITY + 4UL, 
                                      _bt_cmd_task_stack, &_bt_cmd_task_buf);
 
-    _bt_tx_mutex = xSemaphoreCreateMutexStatic(&_bt_tx_mutex_buf);
-    _bt_cmd_queue = xQueueCreate(1, sizeof(rebble_bt_packet));
-        
-    SYS_LOG("BT", APP_LOG_LEVEL_INFO, "Bluetooth Tasks Created");
     
-    /* We are going to start the hardware right now */
-    hw_bluetooth_init();
-    
-    return 0;
+    return INIT_RESP_ASYNC_WAIT;
+}
+
+void bluetooth_init_complete(uint8_t state)
+{
+    os_module_init_complete(INIT_RESP_ERROR);
 }
 
 /*
@@ -252,13 +252,10 @@ static void _process_packet(pbl_transport_packet *pkt)
  * XXX move freertos runloop code to here?
  */
 static void _bt_thread(void *pvParameters)
-{  
-    SYS_LOG("BT", APP_LOG_LEVEL_INFO, "Starting Bluetooth Module");
-    
+{
     /* We are blocked here while bluetooth further delegates a runloop */
-    
-    SYS_LOG("BT", APP_LOG_LEVEL_ERROR, "Bluetooth Module DISABLED");
-    os_module_init_complete(INIT_RESP_ERROR);
+    hw_bluetooth_init();
+
     /* Delete ourself and die */
     vTaskDelete(_bt_task);
     return;

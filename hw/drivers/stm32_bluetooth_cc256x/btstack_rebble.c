@@ -279,7 +279,10 @@ void hal_uart_dma_receive_block(uint8_t *data, uint16_t size)
  */
 void bluetooth_power_cycle(void)
 {
-    hw_bluetooth_power_cycle();
+    if (hw_bluetooth_power_cycle())
+        os_module_init_complete(INIT_RESP_ERROR);
+    else
+        os_module_init_complete(INIT_RESP_OK);
 }
 
 /*
@@ -383,6 +386,7 @@ static void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packe
                 }
                 SYS_LOG("BTSPP", APP_LOG_LEVEL_INFO, "BTstack up and running.");
                 _bt_enabled = 1;
+                bluetooth_init_complete(INIT_RESP_OK);
                 break;
         }
         return;
