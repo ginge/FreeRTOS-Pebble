@@ -673,6 +673,7 @@ const VoidFunc sym[] = {
     [598] = (VoidFunc)menu_layer_is_index_selected,                                            // menu_layer_is_index_selected@00000958
     
     [622] = (VoidFunc)layer_get_unobstructed_bounds,
+    [627] = (VoidFunc)rocky_event_loop_with_resource,
     
     /* These functions are not yet implemented */
     
