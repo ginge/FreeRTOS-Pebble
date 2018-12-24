@@ -23,7 +23,6 @@
  * and constrain memory and runtime of the window
  */
 #include "rebbleos.h"
-#include "overlay_manager.h"
 
 /* NOT USED YET */
 typedef enum OverlayMode {

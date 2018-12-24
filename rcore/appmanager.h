@@ -30,8 +30,9 @@ typedef struct CoreTimer
 typedef struct AppMessage
 {
     uint8_t thread_id;
-    uint8_t message_type_id;
-    void *payload;
+    uint8_t command;
+    void *data;
+    void *context;
 } AppMessage;
 
 typedef struct ButtonMessage
@@ -113,6 +114,10 @@ typedef struct AppTypeHeader {
 #define APP_QUIT         1
 #define APP_TICK         2
 #define APP_DRAW         3
+#define APP_TIMER        4
+#define OVERLAY_CREATE   5
+#define OVERLAY_DESTROY  6
+
 
 #define APP_TYPE_SYSTEM  0
 #define APP_TYPE_FACE    1
@@ -126,6 +131,7 @@ typedef enum AppThreadState {
     AppThreadUnloaded,
     AppThreadLoading,
     AppThreadLoaded,
+    AppThreadRunloop,
     AppThreadUnloading,
 } AppThreadState;
 
@@ -188,7 +194,7 @@ void appmanager_app_runloop_init(void);
 void appmanager_app_main_entry(void);
 list_head *app_manager_get_apps_head();
 void appmanager_post_button_message(ButtonMessage *bmessage);
-void appmanager_post_draw_message(uint32_t timeout_ms);
+void appmanager_post_draw_message(uint8_t force);
 void appmanager_post_draw_display_message(uint8_t *draw_to_display);
 
 void appmanager_app_start(char *name);
@@ -204,3 +210,6 @@ App *appmanager_get_app(char *app_name);
 void appmanager_app_loader_init(void);
 
 void rocky_event_loop_with_resource(uint16_t resource_id);
+
+bool appmanager_is_app_shutting_down(void);
+void timer_start(void);

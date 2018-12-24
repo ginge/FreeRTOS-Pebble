@@ -9,17 +9,6 @@
 #include "overlay_manager.h"
 #include "ngfxwrap.h"
 
-/* A message to talk to the overlay thread */
-typedef struct OverlayMessage {
-    uint8_t command;
-    void *data;
-    void *context;
-} OverlayMessage;
-
-#define OVERLAY_CREATE     0
-#define OVERLAY_DRAW       1
-#define OVERLAY_DESTROY    2
-#define OVERLAY_APP_BUTTON 3
 
 static xQueueHandle _overlay_queue;
 static void _overlay_thread(void *pvParameters);
@@ -37,7 +26,7 @@ uint8_t overlay_window_init(void)
     _ovl_done_sem = xSemaphoreCreateBinaryStatic(&_ovl_done_sem_buf);
 
     // XXX make static
-    _overlay_queue = xQueueCreate(1, sizeof(struct OverlayMessage));
+    _overlay_queue = xQueueCreate(1, sizeof(struct AppMessage));
    
     app_running_thread *thread = appmanager_get_thread(AppThreadOverlay);
     thread->status = AppThreadLoading;
@@ -57,7 +46,7 @@ uint8_t overlay_window_init(void)
  */
 void overlay_window_create(OverlayCreateCallback creation_callback)
 {
-    OverlayMessage om = (OverlayMessage) {
+    AppMessage om = (AppMessage) {
         .command = OVERLAY_CREATE,
         .data = (void *)creation_callback,
         .context = NULL
@@ -67,7 +56,7 @@ void overlay_window_create(OverlayCreateCallback creation_callback)
 
 void overlay_window_create_with_context(OverlayCreateCallback creation_callback, void *context)
 {
-    OverlayMessage om = (OverlayMessage) {
+    AppMessage om = (AppMessage) {
         .command = OVERLAY_CREATE,
         .data = (void *)creation_callback,
         .context = context
@@ -77,8 +66,8 @@ void overlay_window_create_with_context(OverlayCreateCallback creation_callback,
 
 void overlay_window_draw(bool window_is_dirty)
 {
-    OverlayMessage om = (OverlayMessage) {
-        .command = OVERLAY_DRAW,
+    AppMessage om = (AppMessage) {
+        .command = APP_DRAW,
         .data = (void *)window_is_dirty,
     };    
     xQueueSendToBack(_overlay_queue, &om, 1000);
@@ -86,10 +75,9 @@ void overlay_window_draw(bool window_is_dirty)
     xSemaphoreTake(_ovl_done_sem, portMAX_DELAY);
 }
 
-
 void overlay_window_destroy(OverlayWindow *overlay_window)
 {
-    OverlayMessage om = (OverlayMessage) {
+    AppMessage om = (AppMessage) {
         .command = OVERLAY_DESTROY,
         .data = (void *)overlay_window
     };
@@ -98,9 +86,17 @@ void overlay_window_destroy(OverlayWindow *overlay_window)
 
 void overlay_window_post_button_message(ButtonMessage *message)
 {
-    OverlayMessage om = (OverlayMessage) {
-        .command = OVERLAY_APP_BUTTON,
+    AppMessage om = (AppMessage) {
+        .command = APP_BUTTON,
         .data = (void *)message
+    };
+    xQueueSendToBack(_overlay_queue, &om, 0);
+}
+
+void overlay_window_timer_expired(void)
+{
+    AppMessage om = (AppMessage) {
+        .command = APP_TIMER,
     };
     xQueueSendToBack(_overlay_queue, &om, 0);
 }
@@ -256,7 +252,7 @@ static void _overlay_window_destroy(OverlayWindow *overlay_window, bool animated
 static void _overlay_window_draw(bool window_is_dirty)
 {
     app_running_thread *appthread = appmanager_get_thread(AppThreadMainApp);
-    
+
     if (appmanager_get_thread_type() != AppThreadOverlay)
     {
         SYS_LOG("ov win", APP_LOG_LEVEL_ERROR, "Someone not overlay thread is trying to draw. Tsk.");
@@ -280,24 +276,21 @@ static void _overlay_window_draw(bool window_is_dirty)
 
 static void _overlay_thread(void *pvParameters)
 {
-    OverlayMessage data;
+    AppMessage data;
     app_running_thread *_this_thread = appmanager_get_current_thread();
     
     SYS_LOG("overlay", APP_LOG_LEVEL_INFO, "Starting overlay thread...");
 
     rwatch_neographics_init();
-  
+
+    timer_start();
+    
     _this_thread->status = AppThreadLoaded;
     os_module_init_complete(0);
     
     while(1)
-    {
-        TickType_t next_timer = appmanager_timer_get_next_expiry(_this_thread);
-
-        if (next_timer < 0)
-            next_timer = portMAX_DELAY;
-        
-        if (xQueueReceive(_overlay_queue, &data, next_timer))
+    {       
+        if (xQueueReceive(_overlay_queue, &data, portMAX_DELAY))
         {
             switch(data.command)
             {
@@ -306,7 +299,7 @@ static void _overlay_thread(void *pvParameters)
                     _overlay_window_create((OverlayCreateCallback)data.data, data.context);
                     appmanager_post_draw_message(1);
                     break;
-                case OVERLAY_DRAW:
+                case APP_DRAW:
                     _overlay_window_draw((bool)data.data);
                     break;
                 case OVERLAY_DESTROY:
@@ -315,22 +308,22 @@ static void _overlay_thread(void *pvParameters)
                     _overlay_window_destroy(ow, false);
                     appmanager_post_draw_message(1);
                     break;
-                case OVERLAY_APP_BUTTON:
+                case APP_BUTTON:
                     assert(data.data && "You MUST provide a valid button message");
                     /* execute the button's callback */
                     ButtonMessage *message = (ButtonMessage *)data.data;
                     ((ClickHandler)(message->callback))((ClickRecognizerRef)(message->clickref), message->context);
                     break;
+                case APP_TIMER:
+                    appmanager_timer_expired(_this_thread);
+                    appmanager_post_draw_message(1);
+                    timer_start();
+                    break;
                 default:
                     assert(!"I don't know this command!");
             }
-        } else {
-            appmanager_timer_expired(_this_thread);
-            
-            /* When we need to update draw, we post it to the main app. This way
-             * we guarantee the background is drawn first.
-             * App thread will then defer back to this thread to draw any overlays */
-            appmanager_post_draw_message(0);
         }
+        
+        vTaskDelay(0);
     }
 }

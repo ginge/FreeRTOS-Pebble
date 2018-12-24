@@ -107,47 +107,6 @@ uint8_t appmanager_init(void)
     return 0;
 }
 
-
-
-/* 
- * Always adds to the running app's queue.  Note that this is only
- * reasonable to do from the app thread: otherwise, you can race with the
- * check for the timer head.
- */
-void appmanager_timer_add(CoreTimer *timer)
-{
-    app_running_thread *_this_thread = appmanager_get_current_thread();
-    CoreTimer **tnext = &_this_thread->timer_head;
-    
-    /* until either the next pointer is null (i.e., we have hit the end of
-     * the list), or the thing that the next pointer points to is further in
-     * the future than we are (i.e., we want to insert before the thing that
-     * the next pointer points to)
-     */
-    while (*tnext && (timer->when > (*tnext)->when)) {
-        tnext = &((*tnext)->next);
-    }
-    
-    timer->next = *tnext;
-    *tnext = timer;
-}
-
-void appmanager_timer_remove(CoreTimer *timer)
-{
-    app_running_thread *_this_thread = appmanager_get_current_thread();
-    CoreTimer **tnext = &_this_thread->timer_head;
-    
-    while (*tnext) {
-        if (*tnext == timer) {
-            *tnext = timer->next;
-            return;
-        }
-        tnext = &(*tnext)->next;
-    }
-    
-    assert(!"appmanager_timer_remove did not find timer in list");
-}
-
 app_running_thread *_get_current_thread(void)
 {
     TaskHandle_t this_task = xTaskGetCurrentTaskHandle();
@@ -259,15 +218,16 @@ static void _app_management_thread(void *parms)
         /* Sleep waiting for work to do */
         if (xQueueReceive(_app_thread_queue, &am, pdMS_TO_TICKS(1000)))
         {        
-            switch(am.message_type_id)
+            switch(am.command)
             {
                 /* Load an app for someone. face or worker */
                 case THREAD_MANAGER_APP_LOAD:
-                    app_name = (char *)am.payload;
+                    app_name = (char *)am.data;
                     _this_thread = &_app_threads[am.thread_id];
-                    
+
                     if (_this_thread->status == AppThreadLoading || 
-                        _this_thread->status == AppThreadLoaded)
+                        _this_thread->status == AppThreadLoaded || 
+                        _this_thread->status == AppThreadRunloop)
                     {
                         /* post an app quit to the running process
                          * then immediately post our received message back onto 
@@ -277,6 +237,7 @@ static void _app_management_thread(void *parms)
                          * we should track that or use a better mechanism.
                          * in reality this isn't a big issue. A concern maybe
                          */
+                        KERN_LOG("app", APP_LOG_LEVEL_INFO, "Quitting...");
                         appmanager_app_quit();
                         xQueueSendToBack(_app_thread_queue, &am, (TickType_t)100);
                         continue;

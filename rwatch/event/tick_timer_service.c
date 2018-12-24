@@ -21,6 +21,8 @@ static TickTimerState _state = {.onqueue = 0};
 
 static void _tick_timer_callback(CoreTimer *timer);
 
+static drift = 0;
+
 /* Updates the timer interval to fire for the next smallest requested unit,
  * then add to the timer queue.  */
 static void _tick_timer_update_next(TickTimerState *state)
@@ -52,11 +54,11 @@ static void _tick_timer_update_next(TickTimerState *state)
         nexttm.tm_min = nexttm.tm_sec = 0;
         dtime = rcore_mktime(&nexttm);
     }
-    
-    state->timer.when = rcore_time_to_ticks(dtime, 0);
+
+    state->timer.when = rcore_time_to_ticks(dtime, 0) + drift;
     state->timer.callback = _tick_timer_callback;
-    appmanager_timer_add(&state->timer);
     state->onqueue = 1;
+    appmanager_timer_add(&state->timer);
 }
 
 static void _tick_timer_callback(CoreTimer *timer)
@@ -79,6 +81,12 @@ static void _tick_timer_callback(CoreTimer *timer)
     if (tm.tm_mday != state->lasttm.tm_mday) units |= DAY_UNIT;
     if (tm.tm_mon != state->lasttm.tm_mon) units |= MONTH_UNIT;
     if (tm.tm_year != state->lasttm.tm_year) units |= YEAR_UNIT;
+    
+    if (units & state->units && !drift)
+    {
+        drift = xTaskGetTickCount() - timer->when;
+        printf("DRIFT %d\n", drift);
+    }
 
     /* Update before we call in -- otherwise, they could unsubscribe, and
      * we'd just blissfully readd ourselves to the queue.  */
