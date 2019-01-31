@@ -102,8 +102,6 @@ UNIMPL(_gsize_equal);
 UNIMPL(_inverter_layer_create);
 UNIMPL(_inverter_layer_destroy);
 UNIMPL(_inverter_layer_get_layer);
-UNIMPL(_layer_get_clips);
-UNIMPL(_layer_get_data);
 UNIMPL(_layer_set_clips);
 UNIMPL(_light_enable);
 UNIMPL(_light_enable_interaction);
@@ -285,7 +283,7 @@ UNIMPL(_connection_service_peek_pebblekit_connection);
 UNIMPL(_connection_service_subscribe);
 UNIMPL(_connection_service_unsubscribe);
 UNIMPL(_dictation_session_enable_error_dialogs);
-UNIMPL(_gbitmap_get_data_row_info);
+//UNIMPL(_gbitmap_get_data_row_info);
 UNIMPL(_grect_inset);
 UNIMPL(_gpoint_from_polar);
 UNIMPL(_graphics_draw_arc);
@@ -672,6 +670,7 @@ const VoidFunc sym[] = {
 
     [549] = (VoidFunc)action_menu_unfreeze,                                                    // action_menu_unfreeze@00000894
                                                                                                
+    [571] = (VoidFunc)gbitmap_get_data_row_info,                                            // gbitmap_get_data_row_info@000008ec
     [572] = (VoidFunc)content_indicator_configure_direction,                                   // content_indicator_configure_direction@000008f0
     [573] = (VoidFunc)content_indicator_create,                                                // content_indicator_create@000008f4
     [574] = (VoidFunc)content_indicator_destroy,                                               // content_indicator_destroy@000008f8
