@@ -240,11 +240,11 @@ static void _animation_complete(Animation *anim)
         return;
     }
 
-    anim->playcount_count = 0;
     LOG_INFO("[%x] Complete", anim);
 
     /* If NOT part of a sequence, just cleanup and go */
     if (!headanim) {
+        anim->playcount_count = 0;
         return;
     }
 
@@ -255,6 +255,7 @@ static void _animation_complete(Animation *anim)
         if (_all_timers_complete(headanim)) {
             LOG_DEBUG("[%x] Spawn Seq Complete", headanim);
             headanim->playcount_count++;
+            next->scheduled = 0;
             /* post the head back to the update so its callbacks are executed */
             _animation_update(headanim);
             return;
