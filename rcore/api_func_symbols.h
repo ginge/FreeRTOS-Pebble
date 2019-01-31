@@ -93,12 +93,11 @@ UNIMPL(_graphics_context_set_stroke_color_2bit);
 UNIMPL(_graphics_context_set_text_color_2bit);
 UNIMPL(_graphics_draw_round_rect);
 UNIMPL(_graphics_text_layout_get_max_used_size);
-UNIMPL(_grect_align);
+UNIMPL(_window_set_background_color_2bit);
 UNIMPL(_grect_clip);
 UNIMPL(_grect_contains_point);
 UNIMPL(_grect_crop);
 UNIMPL(_grect_is_empty);
-UNIMPL(_grect_standardize);
 UNIMPL(_gsize_equal);
 UNIMPL(_inverter_layer_create);
 UNIMPL(_inverter_layer_destroy);
@@ -202,7 +201,6 @@ UNIMPL(_watch_info_get_color);
 UNIMPL(_watch_info_get_firmware_version);
 UNIMPL(_watch_info_get_model);
 UNIMPL(_graphics_capture_frame_buffer_2bit);
-UNIMPL(_graphics_frame_buffer_is_captured);
 UNIMPL(_clock_to_timestamp);
 UNIMPL(_launch_reason);
 UNIMPL(_wakeup_cancel);
@@ -383,7 +381,9 @@ const VoidFunc sym[] = {
     [122] = (VoidFunc)graphics_fill_circle,                                                    // graphics_fill_circle@000001e8
     [123] = (VoidFunc)graphics_fill_rect,                                                      // graphics_fill_rect@000001ec
                                                                                             
+    [126] = (VoidFunc)grect_align,                                                             // grect_align@000001f8
     [127] = (VoidFunc)n_grect_center_point,                                                    // grect_center_point@000001fc
+    [133] = (VoidFunc)grect_standardize,                                                       // grect_standardize@00000214
                                                                                             
     [131] = (VoidFunc)grect_equal,                                                             // grect_equal@0000020c
                                                                                             
@@ -518,6 +518,7 @@ const VoidFunc sym[] = {
 
     [343] = (VoidFunc)gpath_fill_app,                                                          // gpath_draw_filled@0000055c
 
+    [349] = (VoidFunc)graphics_frame_buffer_is_captured,                                    // graphics_frame_buffer_is_captured@00000574
     [350] = (VoidFunc)graphics_release_frame_buffer,                                           // graphics_release_frame_buffer@00000578
     
     [335] = (VoidFunc)app_heap_bytes_free,                                                      // heap_bytes_free@0000053c
@@ -679,6 +680,7 @@ const VoidFunc sym[] = {
     [577] = (VoidFunc)scroll_layer_get_content_indicator,                                      // scroll_layer_get_content_indicator@00000904
     [578] = (VoidFunc)menu_layer_get_center_focused,                                           // menu_layer_get_center_focused@00000908
     [579] = (VoidFunc)menu_layer_set_center_focused,                                           // menu_layer_set_center_focused@0000090c
+    [580] = (VoidFunc)grect_inset,                                                          // grect_inset@00000910
                                                                                                
     [592] = (VoidFunc)layer_convert_point_to_screen,                                           // layer_convert_point_to_screen@00000940
                                                                                                
@@ -775,12 +777,11 @@ const VoidFunc sym[] = {
     [115] = (UnimplFunc)_graphics_context_set_text_color_2bit,                                 // graphics_context_set_text_color_2bit@000001cc
     [121] = (UnimplFunc)_graphics_draw_round_rect,                                             // graphics_draw_round_rect@000001e4
     [125] = (UnimplFunc)_graphics_text_layout_get_max_used_size,                               // graphics_text_layout_get_max_used_size@000001f4
-    [126] = (UnimplFunc)_grect_align,                                                          // grect_align@000001f8
+    
     [128] = (UnimplFunc)_grect_clip,                                                           // grect_clip@00000200
     [129] = (UnimplFunc)_grect_contains_point,                                                 // grect_contains_point@00000204
     [130] = (UnimplFunc)_grect_crop,                                                           // grect_crop@00000208
     [132] = (UnimplFunc)_grect_is_empty,                                                       // grect_is_empty@00000210
-    [133] = (UnimplFunc)_grect_standardize,                                                    // grect_standardize@00000214
     [134] = (UnimplFunc)_gsize_equal,                                                          // gsize_equal@00000218
     [135] = (UnimplFunc)_inverter_layer_create,                                                // inverter_layer_create@0000021c
     [136] = (UnimplFunc)_inverter_layer_destroy,                                               // inverter_layer_destroy@00000220
@@ -883,7 +884,6 @@ const VoidFunc sym[] = {
     [346] = (UnimplFunc)_watch_info_get_firmware_version,                                      // watch_info_get_firmware_version@00000568
     [347] = (UnimplFunc)_watch_info_get_model,                                                 // watch_info_get_model@0000056c
     [348] = (UnimplFunc)_graphics_capture_frame_buffer_2bit,                                   // graphics_capture_frame_buffer_2bit@00000570
-    [349] = (UnimplFunc)_graphics_frame_buffer_is_captured,                                    // graphics_frame_buffer_is_captured@00000574
     [351] = (UnimplFunc)_clock_to_timestamp,                                                   // clock_to_timestamp@0000057c
     [352] = (UnimplFunc)_launch_reason,                                                        // launch_reason@00000580
     [353] = (UnimplFunc)_wakeup_cancel,                                                        // wakeup_cancel@00000584
