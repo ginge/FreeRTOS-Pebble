@@ -468,7 +468,7 @@ const VoidFunc sym[] = {
     [243] = (VoidFunc)strcpy,                                                                  // strcpy@000003cc
     [244] = (VoidFunc)strftime,                                                                // strftime@000003d0
     [245] = (VoidFunc)strlen,                                                                  // strlen@000003d4
-                                                                                               
+    [246] = (VoidFunc)strncat,                                                                 // strncat@000003d8                                                                                               
     [247] = (VoidFunc)strncmp,                                                                 // strncmp@000003dc
     [248] = (VoidFunc)strncpy,                                                                 // strncpy@000003e0
                                                                                                
@@ -826,7 +826,6 @@ const VoidFunc sym[] = {
     [214] = (UnimplFunc)_rot_bitmap_layer_set_corner_clip_color_2bit,                          // rot_bitmap_layer_set_corner_clip_color_2bit@00000358
     [215] = (UnimplFunc)_rot_bitmap_set_compositing_mode,                                      // rot_bitmap_set_compositing_mode@0000035c
     [216] = (UnimplFunc)_rot_bitmap_set_src_ic,                                                // rot_bitmap_set_src_ic@00000360
-    [246] = (UnimplFunc)_strncat,                                                              // strncat@000003d8
     [249] = (UnimplFunc)_text_layer_legacy2_create,                                            // text_layer_legacy2_create@000003e4
     [250] = (UnimplFunc)_text_layer_legacy2_destroy,                                           // text_layer_legacy2_destroy@000003e8
     [251] = (UnimplFunc)_text_layer_legacy2_get_content_size,                                  // text_layer_legacy2_get_content_size@000003ec
