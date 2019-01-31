@@ -155,11 +155,8 @@ UNIMPL(_text_layer_legacy2_set_size);
 UNIMPL(_text_layer_legacy2_set_text);
 UNIMPL(_text_layer_legacy2_set_text_alignment);
 UNIMPL(_text_layer_legacy2_set_text_color_2bit);
-UNIMPL(_window_get_fullscreen);
 UNIMPL(_window_set_background_color_2bit);
-UNIMPL(_window_set_fullscreen);
 UNIMPL(_window_set_status_bar_icon);
-UNIMPL(_window_stack_pop_all);
 UNIMPL(_app_focus_service_subscribe);
 UNIMPL(_app_focus_service_unsubscribe);
 UNIMPL(_app_message_get_context);
@@ -484,18 +481,19 @@ const VoidFunc sym[] = {
     [271] = (VoidFunc)window_create,                                                           // window_create@0000043c
     [272] = (VoidFunc)window_destroy,                                                          // window_destroy@00000440
     [273] = (VoidFunc)window_get_click_config_provider,                                        // window_get_click_config_provider@00000444
-                                                                                               
+    [274] = (VoidFunc)window_get_fullscreen,                                                   // window_get_fullscreen@00000448
     [275] = (VoidFunc)window_get_root_layer,                                                   // window_get_root_layer@0000044c
     [276] = (VoidFunc)window_is_loaded,                                                        // window_is_loaded@00000450
                                                                                                
     [278] = (VoidFunc)window_set_click_config_provider,                                        // window_set_click_config_provider@00000458
     [279] = (VoidFunc)window_set_click_config_provider_with_context,                           // window_set_click_config_provider_with_context@0000045c
+    [280] = (VoidFunc)window_set_fullscreen,                                                   // window_set_fullscreen@00000460
 
     [282] = (VoidFunc)window_set_window_handlers,                                              // window_set_window_handlers@00000468
     [283] = (VoidFunc)window_stack_contains_window,                                            // window_stack_contains_window@0000046c
     [284] = (VoidFunc)window_stack_get_top_window,                                             // window_stack_get_top_window@00000470
     [285] = (VoidFunc)window_stack_pop,                                                        // window_stack_pop@00000474
-                                                                                               
+    [286] = (VoidFunc)window_stack_pop_all,                                                    // window_stack_pop_all@00000478
     [287] = (VoidFunc)window_stack_push,                                                       // window_stack_push@0000047c
     [288] = (VoidFunc)window_stack_remove,                                                     // window_stack_remove@00000480
                                                                                                
@@ -838,11 +836,8 @@ const VoidFunc sym[] = {
     [258] = (UnimplFunc)_text_layer_legacy2_set_text,                                          // text_layer_legacy2_set_text@00000408
     [259] = (UnimplFunc)_text_layer_legacy2_set_text_alignment,                                // text_layer_legacy2_set_text_alignment@0000040c
     [260] = (UnimplFunc)_text_layer_legacy2_set_text_color_2bit,                               // text_layer_legacy2_set_text_color_2bit@00000410
-    [274] = (UnimplFunc)_window_get_fullscreen,                                                // window_get_fullscreen@00000448
     [277] = (UnimplFunc)_window_set_background_color_2bit,                                     // window_set_background_color_2bit@00000454
-    [280] = (UnimplFunc)_window_set_fullscreen,                                                // window_set_fullscreen@00000460
     [281] = (UnimplFunc)_window_set_status_bar_icon,                                           // window_set_status_bar_icon@00000464
-    [286] = (UnimplFunc)_window_stack_pop_all,                                                 // window_stack_pop_all@00000478
     [289] = (UnimplFunc)_app_focus_service_subscribe,                                          // app_focus_service_subscribe@00000484
     [290] = (UnimplFunc)_app_focus_service_unsubscribe,                                        // app_focus_service_unsubscribe@00000488
     [293] = (UnimplFunc)_app_message_get_context,                                              // app_message_get_context@00000494
