@@ -43,7 +43,7 @@
 /* Configure Logging */
 #define MODULE_NAME "anim"
 #define MODULE_TYPE "SYS"
-#define LOG_LEVEL RBL_LOG_LEVEL_DEBUG //RBL_LOG_LEVEL_ERROR
+#define LOG_LEVEL RBL_LOG_LEVEL_INFO //RBL_LOG_LEVEL_ERROR
 
 
 #define ANIMATION_FPS 60
@@ -214,7 +214,7 @@ static uint8_t _all_timers_complete(Animation *anim)
     TickType_t now = xTaskGetTickCount();
 
     while (anim) {
-        LOG_INFO("[%x] Checking complete %d %d %d %d", anim, anim->timer.when > now, anim->scheduled, anim->onqueue, anim->playcount_count < anim->playcount);
+        LOG_DEBUG("[%x] Checking complete w%d n%d %d %d %d %d", anim, anim->timer.when, now, anim->timer.when > now, anim->scheduled, anim->onqueue, anim->playcount_count < anim->playcount);
         if (anim->timer.when > now || anim->scheduled || 
             anim->onqueue || anim->playcount_count < anim->playcount)
             return 0;
@@ -240,11 +240,11 @@ static void _animation_complete(Animation *anim)
         return;
     }
 
-    anim->playcount_count = 0;
     LOG_INFO("[%x] Complete", anim);
 
     /* If NOT part of a sequence, just cleanup and go */
     if (!headanim) {
+        anim->playcount_count = 0;
         return;
     }
 
@@ -254,7 +254,7 @@ static void _animation_complete(Animation *anim)
     if (headanim->spawn) {
         if (_all_timers_complete(headanim)) {
             LOG_DEBUG("[%x] Spawn Seq Complete", headanim);
-            headanim->playcount_count++;
+            next->scheduled = 0;
             /* post the head back to the update so its callbacks are executed */
             _animation_update(headanim);
             return;
@@ -277,7 +277,6 @@ static void _animation_complete(Animation *anim)
     if (!next) {
         assert(headanim->sequence_head.next);
         LOG_INFO("[%x] Sequence Complete", headanim);
-        headanim->playcount_count++;
         _animation_update(headanim);
         return;
     }
@@ -297,10 +296,15 @@ static void _animation_update(Animation *anim)
     anim->onqueue = 0;
     TickType_t now = xTaskGetTickCount();
     TickType_t progress = now - anim->startticks;
-    anim->timer.when = now + ANIMATION_TICKS;
 
     if (anim->duration == ANIMATION_DURATION_INFINITE) 
     {
+        if (anim->sequence_head.next) {
+            /* If we an infinite head element, just scedule us again */
+            animation_schedule(anim);
+            return;
+        }
+        anim->timer.when = now + ANIMATION_TICKS;
         appmanager_timer_add(&anim->timer);
         return;
     }
@@ -312,7 +316,7 @@ static void _animation_update(Animation *anim)
         _animation_complete(anim);
         return;
     }
-
+    anim->timer.when = now + ANIMATION_TICKS;
     progress *= ANIMATION_NORMALIZED_MAX;
     progress /= anim->duration;
 
@@ -381,7 +385,7 @@ static void _anim_callback(CoreTimer *timer)
 static inline bool _is_immutable(Animation *anim)
 {
     if (!anim || anim->sequence_node.next || 
-        anim->sequence_node.prev || anim->sequence_head.next || 
+        anim->sequence_node.prev || 
         anim->scheduled || anim->onqueue)
         return true;
 
