@@ -86,19 +86,12 @@ UNIMPL(_dict_write_uint32);
 UNIMPL(_dict_write_uint8);
 UNIMPL(_gmtime);
 UNIMPL(_gpath_draw_filled_legacy);
-UNIMPL(_gpoint_equal);
-UNIMPL(_graphics_context_set_compositing_mode);
 UNIMPL(_graphics_context_set_fill_color_2bit);
 UNIMPL(_graphics_context_set_stroke_color_2bit);
 UNIMPL(_graphics_context_set_text_color_2bit);
 UNIMPL(_graphics_draw_round_rect);
 UNIMPL(_graphics_text_layout_get_max_used_size);
 UNIMPL(_window_set_background_color_2bit);
-UNIMPL(_grect_clip);
-UNIMPL(_grect_contains_point);
-UNIMPL(_grect_crop);
-UNIMPL(_grect_is_empty);
-UNIMPL(_gsize_equal);
 UNIMPL(_inverter_layer_create);
 UNIMPL(_inverter_layer_destroy);
 UNIMPL(_inverter_layer_get_layer);
@@ -369,7 +362,9 @@ const VoidFunc sym[] = {
     [108] = (VoidFunc)gpath_draw_app,                                                          // gpath_draw_outline@000001b0
     [109] = (VoidFunc)gpath_move_to_app,                                                       // gpath_move_to@000001b4
     [110] = (VoidFunc)gpath_rotate_to_app,                                                     // gpath_rotate_to@000001b8
-
+    [111] = (VoidFunc)n_gpoint_equal,                                                          // gpoint_equal@000001bc
+    [112] = (VoidFunc)n_graphics_context_set_compositing_mode,                                 // graphics_context_set_compositing_mode@000001c0
+    
     [116] = (VoidFunc)graphics_draw_bitmap_in_rect,                                            // graphics_draw_bitmap_in_rect@000001d0
     [117] = (VoidFunc)graphics_draw_circle,                                                    // graphics_draw_circle@000001d4
     [118] = (VoidFunc)graphics_draw_line,                                                      // graphics_draw_line@000001d8
@@ -381,9 +376,14 @@ const VoidFunc sym[] = {
                                                                                             
     [126] = (VoidFunc)grect_align,                                                             // grect_align@000001f8
     [127] = (VoidFunc)n_grect_center_point,                                                    // grect_center_point@000001fc
+    [128] = (VoidFunc)n_grect_clip,                                                            // grect_clip@00000200
+    [129] = (VoidFunc)n_grect_contains_point,                                                  // grect_contains_point@00000204
+    [130] = (VoidFunc)n_grect_crop,                                                            // grect_crop@00000208
+    [131] = (VoidFunc)n_grect_equal,                                                           // grect_equal@0000020c
+    [132] = (VoidFunc)n_grect_is_empty,                                                        // grect_is_empty@00000210
     [133] = (VoidFunc)grect_standardize,                                                       // grect_standardize@00000214
+    [134] = (VoidFunc)n_gsize_equal,                                                           // gsize_equal@00000218
                                                                                             
-    [131] = (VoidFunc)grect_equal,                                                             // grect_equal@0000020c
                                                                                             
     [138] = (VoidFunc)layer_add_child,                                                         // layer_add_child@00000228
     [139] = (VoidFunc)layer_create,                                                            // layer_create@0000022c
@@ -522,6 +522,7 @@ const VoidFunc sym[] = {
     [335] = (VoidFunc)app_heap_bytes_free,                                                      // heap_bytes_free@0000053c
                                                                                                
     [363] = (VoidFunc)mktime,                                                                  // mktime@000005ac
+    [364] = (VoidFunc)gcolor_equal,                                                         // gcolor_equal@000005b0
                                                                                                
     [370] = (VoidFunc)bitmap_layer_set_background_color,                                       // bitmap_layer_set_background_color@000005c8
     [371] = (VoidFunc)graphics_context_set_fill_color,                                         // graphics_context_set_fill_color@000005cc
@@ -790,19 +791,12 @@ const VoidFunc sym[] = {
     [95]  = (UnimplFunc)_dict_write_uint8,                                                     // dict_write_uint8@0000017c
     [104] = (UnimplFunc)_gmtime,                                                               // gmtime@000001a0
     [107] = (UnimplFunc)_gpath_draw_filled_legacy,                                             // gpath_draw_filled_legacy@000001ac
-    [111] = (UnimplFunc)_gpoint_equal,                                                         // gpoint_equal@000001bc
-    [112] = (UnimplFunc)_graphics_context_set_compositing_mode,                                // graphics_context_set_compositing_mode@000001c0
     [113] = (UnimplFunc)_graphics_context_set_fill_color_2bit,                                 // graphics_context_set_fill_color_2bit@000001c4
     [114] = (UnimplFunc)_graphics_context_set_stroke_color_2bit,                               // graphics_context_set_stroke_color_2bit@000001c8
     [115] = (UnimplFunc)_graphics_context_set_text_color_2bit,                                 // graphics_context_set_text_color_2bit@000001cc
     [121] = (UnimplFunc)_graphics_draw_round_rect,                                             // graphics_draw_round_rect@000001e4
     [125] = (UnimplFunc)_graphics_text_layout_get_max_used_size,                               // graphics_text_layout_get_max_used_size@000001f4
     
-    [128] = (UnimplFunc)_grect_clip,                                                           // grect_clip@00000200
-    [129] = (UnimplFunc)_grect_contains_point,                                                 // grect_contains_point@00000204
-    [130] = (UnimplFunc)_grect_crop,                                                           // grect_crop@00000208
-    [132] = (UnimplFunc)_grect_is_empty,                                                       // grect_is_empty@00000210
-    [134] = (UnimplFunc)_gsize_equal,                                                          // gsize_equal@00000218
     [135] = (UnimplFunc)_inverter_layer_create,                                                // inverter_layer_create@0000021c
     [136] = (UnimplFunc)_inverter_layer_destroy,                                               // inverter_layer_destroy@00000220
     [137] = (UnimplFunc)_inverter_layer_get_layer,                                             // inverter_layer_get_layer@00000224
@@ -876,7 +870,7 @@ const VoidFunc sym[] = {
     [312] = (UnimplFunc)_persist_read_string,                                                  // persist_read_string@000004e0
     [313] = (UnimplFunc)_persist_write_data,                                                   // persist_write_data@000004e4
     [314] = (UnimplFunc)_dict_size,                                                            // dict_size@000004e8
-    [315] = (UnimplFunc)_n_graphics_text_layout_get_content_size,                              // graphics_text_layout_get_content_size@000004ec
+    [315] = (UnimplFunc)_graphics_text_layout_get_content_size,                                // graphics_text_layout_get_content_size@000004ec
     [317] = (UnimplFunc)_accel_data_service_subscribe,                                         // accel_data_service_subscribe@000004f4
     [320] = (UnimplFunc)_menu_layer_legacy2_set_callbacks,                                     // menu_layer_legacy2_set_callbacks@00000500
     [322] = (UnimplFunc)_number_window_get_window,                                             // number_window_get_window@00000508
@@ -916,7 +910,6 @@ const VoidFunc sym[] = {
     [360] = (UnimplFunc)_i18n_get_system_locale,                                               // i18n_get_system_locale@000005a0
     [361] = (UnimplFunc)__localeconv_r,                                                        // _localeconv_r@000005a4
     [362] = (UnimplFunc)_setlocale,                                                            // setlocale@000005a8
-    [364] = (UnimplFunc)_gcolor_equal,                                                         // gcolor_equal@000005b0
     [365] = (UnimplFunc)___profiler_init,                                                      // __profiler_init@000005b4
     [366] = (UnimplFunc)___profiler_print_stats,                                               // __profiler_print_stats@000005b8
     [367] = (UnimplFunc)___profiler_start,                                                     // __profiler_start@000005bc
@@ -964,8 +957,7 @@ const VoidFunc sym[] = {
     [568] = (UnimplFunc)_connection_service_subscribe,                                         // connection_service_subscribe@000008e0
     [569] = (UnimplFunc)_connection_service_unsubscribe,                                       // connection_service_unsubscribe@000008e4
     [570] = (UnimplFunc)_dictation_session_enable_error_dialogs,                               // dictation_session_enable_error_dialogs@000008e8
-    [571] = (UnimplFunc)_gbitmap_get_data_row_info,                                            // gbitmap_get_data_row_info@000008ec
-    [580] = (UnimplFunc)_grect_inset,                                                          // grect_inset@00000910
+//     [571] = (UnimplFunc)_gbitmap_get_data_row_info,                                            // gbitmap_get_data_row_info@000008ec
     [581] = (UnimplFunc)_gpoint_from_polar,                                                    // gpoint_from_polar@00000914
     [582] = (UnimplFunc)_graphics_draw_arc,                                                    // graphics_draw_arc@00000918
     [583] = (UnimplFunc)_graphics_fill_radial,                                                 // graphics_fill_radial@0000091c
