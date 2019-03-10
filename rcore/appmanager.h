@@ -14,6 +14,7 @@
 #include "task.h"
 #include "qalloc.h"
 #include "node_list.h"
+#include "uuid.h"
 #include <stdbool.h>
 
 // TODO     Make this dynamic. hacky 
@@ -49,25 +50,6 @@ typedef struct Version {
   uint8_t minor;
 } __attribute__((__packed__)) Version;
 
-typedef struct Uuid {
-    uint8_t b0;
-    uint8_t b1;
-    uint8_t b2;
-    uint8_t b3;
-    uint8_t b4;
-    uint8_t b5;
-    uint8_t b6;
-    uint8_t b7;
-    uint8_t b8;
-    uint8_t b9;
-    uint8_t b10;
-    uint8_t b11;
-    uint8_t b12;
-    uint8_t b13;
-    uint8_t b14;
-    uint8_t b15;
-} __attribute__((__packed__)) Uuid;
-  
 typedef struct ApplicationHeader {
     char header[8];                   // PBLAPP
     Version header_version;           // version of this header
@@ -196,13 +178,15 @@ void appmanager_post_draw_display_message(uint8_t *draw_to_display);
 void appmanager_app_start(char *name);
 void appmanager_app_quit(void);
 void appmanager_app_display_done(void);
+bool appmanager_is_app_shutting_down(void);
 
 void appmanager_post_generic_app_message(AppMessage *am, TickType_t timeout);
 void appmanager_timer_expired(app_running_thread *thread);
 TickType_t appmanager_timer_get_next_expiry(app_running_thread *thread);
-
 /* in appmanager_app.c */
 App *appmanager_get_app(char *app_name);
 void appmanager_app_loader_init(void);
 
 void rocky_event_loop_with_resource(uint16_t resource_id);
+
+void timer_init(void);

@@ -14,6 +14,8 @@
 #include "overlay_manager.h"
 #include "notification_manager.h"
 #include "power.h"
+#include "qemu.h"
+#include "blob_db_ramfs.h"
 
 typedef uint8_t (*mod_callback)(void);
 static TaskHandle_t _os_task;
@@ -82,9 +84,9 @@ static void _os_thread(void *pvParameters)
     _module_init(bluetooth_init,        "Bluetooth");
     power_init();
     KERN_LOG("init", APP_LOG_LEVEL_INFO, "Power Init");
-
     SYS_LOG("OS", APP_LOG_LEVEL_INFO,   "Init: Main hardware up. Starting OS modules");
     _module_init(resource_init,         "Resources");
+    ramfs_init();
     _module_init(notification_init,     "Notifications");
     _module_init(overlay_window_init,   "Overlay");
     _module_init(appmanager_init,       "Main App");
@@ -159,6 +161,11 @@ static void _module_init(mod_callback mod, const char *mod_name)
             break;
         case INIT_RESP_ERROR:
             SYS_LOG("OS", APP_LOG_LEVEL_ERROR, "Init: Module %s broken.", mod_name);
+            if (strncmp(mod_name, "Bluetooth", 9) == 0)
+            {
+                SYS_LOG("OS", APP_LOG_LEVEL_DEBUG, "Bluetooth failed. Assuming QEMU host.");
+                _module_init(qemu_init, "QEMU");
+            }
     }
 
     return;

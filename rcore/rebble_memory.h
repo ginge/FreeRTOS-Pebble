@@ -8,10 +8,6 @@
  */
 
 #include "FreeRTOS.h"
-#include <string.h>
-#include <stdlib.h>
-#include "stdbool.h"
-
 #define malloc system_malloc
 #define calloc system_calloc
 #define free vPortFree

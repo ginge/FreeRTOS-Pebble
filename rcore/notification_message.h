@@ -39,4 +39,5 @@ uint16_t message_count(void);
  * 
  * @param full_msg_t the pebble message to add
  */
-void message_add(full_msg_t *msg);
+// void message_add(full_msg_t *msg);
+// 

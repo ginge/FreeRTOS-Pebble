@@ -11,6 +11,7 @@
 #include "overlay_manager.h"
 #include "notification_manager.h"
 #include "timers.h"
+#include "ngfxwrap.h"
 
 /* Configure Logging */
 #define MODULE_NAME "apploop"
@@ -22,7 +23,7 @@ void back_long_click_release_handler(ClickRecognizerRef recognizer, void *contex
 void app_select_single_click_handler(ClickRecognizerRef recognizer, void *context);
 void app_back_single_click_handler(ClickRecognizerRef recognizer, void *context);
 bool booted = false;
-
+static void _draw(uint8_t force_draw);
 static xQueueHandle _app_message_queue;
 
 void appmanager_app_runloop_init(void)
@@ -39,7 +40,10 @@ void appmanager_post_generic_app_message(AppMessage *am, TickType_t timeout)
     app_running_thread *_thread = appmanager_get_thread(AppThreadMainApp);
     if (_thread->status == AppThreadRunloop)
         if (!xQueueSendToBack(_app_message_queue, am, timeout))
-            LOG_ERROR("Not posting. App not running");
+        {
+//             LOG_ERROR("Not posting. App not running");
+//             _draw(0);
+        }
 }
 
 /*
@@ -191,17 +195,19 @@ void app_event_loop(void)
             /* We woke up for some kind of event that someone posted.  But what? */
             if (data.command == APP_BUTTON)
             {
+                SYS_LOG("ov", APP_LOG_LEVEL_ERROR, "APP BUTTON ACC");
                 if (appmanager_is_app_shutting_down())
                     continue;
 
-                if (overlay_window_accepts_keypress())
-                {
-                    overlay_window_post_button_message(data.data);
-                    continue;
-                }
+//                 if (overlay_window_accepts_keypress())
+//                 {
+//                     overlay_window_post_button_message(data.data);
+//                     continue;
+//                 }
                 /* execute the button's callback */
                 ButtonMessage *message = (ButtonMessage *)data.data;
                 ((ClickHandler)(message->callback))((ClickRecognizerRef)(message->clickref), message->context);
+                appmanager_post_draw_message(0);
             }
             /* Someone has requested the application close.
              * We will attempt graceful shutdown by unsubscribing timers
@@ -241,7 +247,7 @@ void app_event_loop(void)
                 if (appmanager_is_app_shutting_down())
                     continue;
 
-                _draw(data.data);
+                _draw((uint32_t)data.data);
             }
         } else {
             if (appmanager_is_app_shutting_down())

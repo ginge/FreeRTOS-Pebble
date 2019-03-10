@@ -149,6 +149,7 @@ void window_stack_push_configure(Window *window, bool animated)
         else 
             _animation_setup(false);
     }
+
     window_configure(window);
     window_dirty(true);
 }
@@ -322,6 +323,8 @@ void window_dtor(Window* window)
 {
     // free all of the layers
     layer_destroy(window->root_layer);
+    app_free(window->root_layer);
+    window->root_layer = NULL;
     SYS_LOG("window", APP_LOG_LEVEL_INFO, "DTOR");
 }
 

@@ -19,6 +19,7 @@ CFLAGS_all += -IApps/System
 CFLAGS_all += -IConfig
 CFLAGS_all += -Ircore
 CFLAGS_all += -Ircore/protocol
+CFLAGS_all += -Ircore/service
 CFLAGS_all += -Irwatch
 CFLAGS_all += -Irwatch/ui
 CFLAGS_all += -Irwatch/ui/notifications
@@ -27,8 +28,8 @@ CFLAGS_all += -Irwatch/ui/animation
 CFLAGS_all += -Irwatch/input
 CFLAGS_all += -Irwatch/graphics
 CFLAGS_all += -Irwatch/event
+CFLAGS_all += -Ihw/platform/qemu
 CFLAGS_all += -DNGFX_IS_CORE
-
 # XXX: nostdinc
 CFLAGS_all += -O0 -ggdb -Wall -ffunction-sections -fdata-sections -mthumb -mlittle-endian -finline-functions -std=gnu99 -falign-functions=16
 # CFLAGS_all += -Wno-implicit-function-declaration
@@ -110,9 +111,18 @@ SRCS_all += rcore/resource.c
 SRCS_all += rcore/watchdog.c
 SRCS_all += rcore/overlay_manager.c
 SRCS_all += rcore/rebble_util.c
+SRCS_all += rcore/qemu.c
+SRCS_all += rcore/qemu_endpoints.c
 
 SRCS_all += rcore/protocol/protocol_notification.c
 SRCS_all += rcore/protocol/protocol_system.c
+SRCS_all += rcore/protocol/protocol_app.c
+SRCS_all += rcore/protocol/protocol_blob.c
+SRCS_all += rcore/protocol/protocol.c
+
+SRCS_all += rcore/service/blob_db.c
+SRCS_all += rcore/service/blob_db_ramfs.c
+SRCS_all += rcore/service/timeline.c
 
 SRCS_all += rwatch/librebble.c
 SRCS_all += rwatch/ngfxwrap.c
@@ -151,6 +161,8 @@ SRCS_all += Apps/System/testapp.c
 
 SRCS_all += Apps/System/test.c
 SRCS_all += Apps/System/notification.c
+
+SRCS_all += hw/platform/qemu/hw_qemu.c
 
 include hw/chip/stm32f4xx/config.mk
 include hw/chip/stm32f2xx/config.mk
