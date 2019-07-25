@@ -18,7 +18,7 @@ directory for the SDK using the following.
 ```sh
     mkdir ~/pebble-dev/
     cd ~/pebble-dev/
-    wget https://s3.amazonaws.com/assets.getpebble.com/pebble-tool/pebble-sdk-4.5-linux64.tar.bz2
+    wget https://developer.rebble.io/s3.amazonaws.com/assets.getpebble.com/pebble-tool/pebble-sdk-4.5-linux64.tar.bz2
     tar -jxf pebble-sdk-4.5-linux64.tar.bz2
     echo 'export PATH=~/pebble-dev/pebble-sdk-4.5-linux64/bin:$PATH' >> ~/.bash_profile
     . ~/.bash_profile
